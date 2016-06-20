@@ -62,14 +62,14 @@ import (
 */
 
 type OkcoinTrade struct {
-	partner    string
+	api_key    string
 	secret_key string
 	errno      int64
 }
 
-func NewOkcoinTrade(partner, secret_key string) *OkcoinTrade {
+func NewOkcoinTrade(api_key, secret_key string) *OkcoinTrade {
 	w := new(OkcoinTrade)
-	w.partner = partner
+	w.api_key = api_key
 	w.secret_key = secret_key
 	return w
 }
@@ -235,7 +235,7 @@ type UserInfo struct {
 
 func (w *OkcoinTrade) GetAccount() (userInfo UserInfo, ret bool) {
 	pParams := make(map[string]string)
-	pParams["partner"] = w.partner
+	pParams["api_key"] = w.api_key
 
 	ret = true
 
@@ -268,13 +268,15 @@ func (w *OkcoinTrade) GetAccount() (userInfo UserInfo, ret bool) {
 
 type OKOrder struct {
 	Orders_id   int
+	Order_id    int
 	Status      int
 	Symbol      string
 	Type        string
-	Rate        float64
 	Amount      float64
 	Deal_amount float64
-	Avg_rate    float64
+	Create_date float64
+	Avg_price float32
+	price  float32
 }
 
 type OKOrderTable struct {
@@ -284,7 +286,7 @@ type OKOrderTable struct {
 
 func (w *OkcoinTrade) Get_order(symbol, order_id string) (ret bool, m OKOrderTable) {
 	pParams := make(map[string]string)
-	pParams["partner"] = w.partner
+	pParams["api_key"] = w.api_key
 	pParams["symbol"] = symbol
 	pParams["order_id"] = order_id
 
@@ -324,7 +326,7 @@ func (w *OkcoinTrade) Get_LTCorder(order_id string) (ret bool, m OKOrderTable) {
 
 func (w *OkcoinTrade) Cancel_order(symbol, order_id string) bool {
 	pParams := make(map[string]string)
-	pParams["partner"] = w.partner
+	pParams["api_key"] = w.api_key
 	pParams["symbol"] = symbol
 	pParams["order_id"] = order_id
 
@@ -370,12 +372,12 @@ func (w *OkcoinTrade) Cancel_LTCorder(order_id string) (ret bool) {
 	return w.Cancel_order("ltc_cny", order_id)
 }
 
-func (w *OkcoinTrade) doTrade(symbol, method, rate, amount string) int {
+func (w *OkcoinTrade) doTrade(symbol, method, price, amount string) int {
 	pParams := make(map[string]string)
-	pParams["partner"] = w.partner
+	pParams["api_key"] = w.api_key
 	pParams["symbol"] = symbol
 	pParams["type"] = method
-	pParams["rate"] = rate
+	pParams["price"] = price
 	pParams["amount"] = amount
 
 	body, err := w.httpRequest(Config["ok_api_trade"], pParams)

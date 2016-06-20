@@ -41,6 +41,7 @@ var ErrorCodeMap = map[int64]string{
 	10013: "此接口只支持https请求",
 	10014: "下单价格不得≤0或≥1000000",
 	10015: "下单价格与最新成交价偏差过大",
+	10016: "币数量不足",
 }
 
 type Okcoin struct {
@@ -74,7 +75,7 @@ func (w Okcoin) GetOrder(order_id string) (ret bool, order Order) {
 	}
 
 	order.Id = ok_orderTable.Orders[0].Orders_id
-	order.Price = ok_orderTable.Orders[0].Avg_rate
+	order.Price = ok_orderTable.Orders[0].Avg_price
 	order.Amount = ok_orderTable.Orders[0].Amount
 	order.Deal_amount = ok_orderTable.Orders[0].Deal_amount
 

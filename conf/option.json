@@ -3,7 +3,7 @@
     "MACDsellThreshold": "-0.005",
     "basePrice": "3827",
     "buyThreshold": "0.0003",
-    "datacenter": "huobi",
+    "datacenter": "okcoin",
     "disable_backtesting": "0",
     "discipleMode": "0",
     "discipleValue": "0.0",
@@ -22,5 +22,5 @@
     "to_email": "xxxxx@qq.com",
     "totalHour": "20",
     "tradeAmount": "0.01",
-    "tradecenter": "huobi"
+    "tradecenter": "okcoin"
 }

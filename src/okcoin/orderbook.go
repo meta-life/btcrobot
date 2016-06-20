@@ -133,6 +133,7 @@ func (w *Okcoin) analyzeOrderBook(content string) (ret bool, orderBook OrderBook
 		logger.Infoln(err)
 		return
 	}
+	fmt.Printf("%+v",_okOrderBook)
 
 	okOrderBook := convert2struct(_okOrderBook)
 

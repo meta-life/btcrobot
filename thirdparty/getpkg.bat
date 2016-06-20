@@ -11,6 +11,8 @@ goto end
 set OLDGOPATH=%GOPATH%
 set GOPATH=%~dp0
 
+go get -u github.com/philsong/snappy-go/snappy
+go get -u github.com/codegangsta/inject
 go get -u github.com/philsong/martini
 go get -u github.com/codegangsta/martini-contrib/auth
 go get -u github.com/philsong/goleveldb/leveldb

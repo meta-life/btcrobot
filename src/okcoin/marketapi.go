@@ -59,18 +59,11 @@ import (
 	https://www.okcoin.com/klineData.do?type=3&marketFrom=3
 */
 
-func (w *Okcoin) AnalyzeKLinePeroid(symbol string, peroid int) (ret bool, records []Record) {
-	var oksymbol string
-	if symbol == "btc_cny" {
-		oksymbol = "okcoinbtccny"
-	} else {
-		oksymbol = "okcoinltccny"
-	}
-
+func (w *Okcoin) AnalyzeKLinePeroid(symbol string,period string) (ret bool, records []Record) {
 	ret = false
 	now := time.Now().UnixNano() / 1000000
 
-	req, err := http.NewRequest("GET", fmt.Sprintf(Config["ok_kline_url"], 60*peroid, oksymbol, now), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf(Config["ok_kline_url"],symbol, period, now), nil)
 	if err != nil {
 		logger.Fatal(err)
 		return
@@ -115,7 +108,7 @@ func (w *Okcoin) AnalyzeKLinePeroid(symbol string, peroid int) (ret bool, record
 		} else {
 			body = string(bodyByte)
 
-			ioutil.WriteFile(fmt.Sprintf("cache/okTradeKLine_%03d.data", peroid), bodyByte, 0644)
+			ioutil.WriteFile(fmt.Sprintf("cache/okTradeKLine_%s.data", period), bodyByte, 0644)
 		}
 	}
 
