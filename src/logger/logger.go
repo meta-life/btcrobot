@@ -19,7 +19,7 @@
 package logger
 
 import (
-	"config"
+	. "config"
 	"fmt"
 	"io"
 	"log"

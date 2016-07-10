@@ -82,9 +82,25 @@ func (w Okcoin) GetOrder(order_id string) (ret bool, order Order) {
 	return
 }
 
-func (w Okcoin) GetKLine(peroid int) (ret bool, records []Record) {
+func (w Okcoin) GetKLine(period int) (ret bool, records []Record) {
 	symbol := Option["symbol"]
-	return w.AnalyzeKLinePeroid(symbol, peroid)
+	var periodOkcoin string
+
+	switch period {
+	case 1:
+		periodOkcoin = "1min"
+	case 5:
+		periodOkcoin = "5min"
+	case 15:
+		periodOkcoin = "15min"
+	case 30:
+		periodOkcoin = "30min"
+	case 60:
+		periodOkcoin = "1hour"
+	case 100:
+		periodOkcoin = "1day"
+	}
+	return w.AnalyzeKLinePeroid(symbol, periodOkcoin)
 }
 
 func (w Okcoin) GetAccount() (account Account, ret bool) {

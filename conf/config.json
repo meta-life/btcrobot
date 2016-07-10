@@ -24,15 +24,15 @@
 
 	"ok_base_url":"https://www.okcoin.cn/",
 	"ok_api_userinfo":"https://www.okcoin.cn/api/v1/userinfo.do",
-	"ok_api_getorder":" https://www.okcoin.cn/api/v1/order_info.do",
+	"ok_api_getorder":"https://www.okcoin.cn/api/v1/order_info.do",
 	"ok_api_cancelorder": "https://www.okcoin.cn/api/v1/cancel_order.do",
 	"ok_api_trade":"https://www.okcoin.cn/api/v1/trade.do",
-	"ok_kline_url":" https://www.okcoin.cn/api/v1/kline.do?symbol=%s&type=%s&since=%s",
+	"ok_kline_url":"https://www.okcoin.cn/api/v1/kline.do?symbol=%s&type=%s&since=%s",
 	"ok_depth_url":"https://www.okcoin.cn/api/v1/depth.do?symbol=%s",
 
 	"debug": "1",
 	"errorconsole": "0",
-	"infoconsole": "1",
+	"infoconsole": "0",
 	"fatalconsole": "1",
 	"debugconsole": "0",
 

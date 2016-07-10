@@ -28,7 +28,6 @@ import (
 	"logger"
 	"net/http"
 	"net/url"
-	"sort"
 	"strings"
 	"util"
 )
@@ -75,17 +74,14 @@ func NewOkcoinTrade(api_key, secret_key string) *OkcoinTrade {
 }
 
 func (w *OkcoinTrade) createSign(pParams map[string]string) string {
-	ms := util.NewMapSorter(pParams)
-	sort.Sort(ms)
-
 	v := url.Values{}
-	for _, item := range ms {
-		v.Add(item.Key, item.Val)
+	for key, val := range pParams {
+		v.Add(key, val)
 	}
 
 	h := md5.New()
 
-	io.WriteString(h, v.Encode()+w.secret_key)
+	io.WriteString(h, v.Encode()+"&secret_key="+w.secret_key)
 	sign := fmt.Sprintf("%X", h.Sum(nil))
 
 	return sign
@@ -275,8 +271,8 @@ type OKOrder struct {
 	Amount      float64
 	Deal_amount float64
 	Create_date float64
-	Avg_price float32
-	price  float32
+	Avg_price   float64
+	price       float64
 }
 
 type OKOrderTable struct {

@@ -122,8 +122,8 @@ func (emaStrategy *EMAStrategy) Tick(records []Record) bool {
 	emaShort := EMA(Price, shortEMA)
 	emaLong := EMA(Price, longEMA)
 	EMAdif := getMACDdif(emaShort, emaLong)
-	emaLast := EMAdif[length-3]
-	emaCurr := EMAdif[length-2]
+	emaLast := EMAdif[length-3]//?
+	emaCurr := EMAdif[length-2]//?
 
 	if emaStrategy.PrevEMACross == "unknown" {
 		if is_up(emaLast) {

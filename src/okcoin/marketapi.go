@@ -21,49 +21,20 @@ package okcoin
 import (
 	. "common"
 	. "config"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"logger"
 	"net/http"
-	"strconv"
-	"strings"
 	"time"
 	"util"
 )
 
-/*
-	SEE DOC:
-	TRADE API
-	https://www.okcoin.com/t-1000097.html
-
-	行情API
-	https://www.okcoin.com/shequ/themeview.do?tid=1000052&currentPage=1
-
-	// non-official API :P
-	K线数据step单位为second
-	https://www.okcoin.com/kline/period.do?step=60&symbol=okcoinbtccny&nonce=1394955131098
-
-	https://www.okcoin.com/kline/trades.do?since=10625682&symbol=okcoinbtccny&nonce=1394955760557
-
-	https://www.okcoin.com/kline/depth.do?symbol=okcoinbtccny&nonce=1394955767484
-
-	https://www.okcoin.com/real/ticker.do?symbol=0&random=61
-
-	// old kline for btc
-	日数据
-	https://www.okcoin.com/klineData.do?type=3&marketFrom=0
-	5分钟数据
-	https://www.okcoin.com/klineData.do?type=1&marketFrom=0
-
-	// for ltc
-	https://www.okcoin.com/klineData.do?type=3&marketFrom=3
-*/
-
-func (w *Okcoin) AnalyzeKLinePeroid(symbol string,period string) (ret bool, records []Record) {
+func (w *Okcoin) AnalyzeKLinePeroid(symbol string, period string) (ret bool, records []Record) {
 	ret = false
-	now := time.Now().UnixNano() / 1000000
+	now := time.Now().Unix() * 1000
 
-	req, err := http.NewRequest("GET", fmt.Sprintf(Config["ok_kline_url"],symbol, period, now), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf(Config["ok_kline_url"], symbol, period, now), nil)
 	if err != nil {
 		logger.Fatal(err)
 		return
@@ -115,80 +86,46 @@ func (w *Okcoin) AnalyzeKLinePeroid(symbol string,period string) (ret bool, reco
 	return analyzePeroidLine(body)
 }
 
+func convert2Records(_records []interface{}) (records []Record) {
+	records = make([]Record, len(_records))
+	for k, v := range _records {
+		if vt, ok := v.([]interface{}); ok {
+			for ik, iv := range vt {
+				switch ik {
+				case 0:
+					const layout = "2006-01-02 15:04:05"
+
+					Time := int64(util.InterfaceToFloat64(iv))
+
+					t := time.Unix(Time/1000, 0)
+
+					records[k].TimeStr = t.Format(layout)
+					records[k].Time = Time
+				case 1:
+					records[k].Open = util.InterfaceToFloat64(iv)
+				case 2:
+					records[k].High = util.InterfaceToFloat64(iv)
+				case 3:
+					records[k].Low = util.InterfaceToFloat64(iv)
+				case 4:
+					records[k].Close = util.InterfaceToFloat64(iv)
+				case 5:
+					records[k].Volumn = util.InterfaceToFloat64(iv)
+				}
+			}
+		}
+	}
+	return
+}
 func analyzePeroidLine(content string) (ret bool, records []Record) {
 	logger.Traceln("Okcoin analyzePeroidLine begin....")
-	content = strings.TrimPrefix(content, "[[")
-	content = strings.TrimSuffix(content, "]]")
-
 	ret = false
-	for _, value := range strings.Split(content, `],[`) {
-		v := strings.Split(value, ",")
-		if len(v) < 8 {
-			logger.Debugln("wrong data")
-			return
-		}
-
-		var record Record
-		Time, err := strconv.ParseInt(v[0], 0, 64)
-		if err != nil {
-			logger.Debugln("config item is not float")
-			return
-		}
-
-		_, err = strconv.ParseInt(v[1], 0, 64)
-		if err != nil {
-			logger.Debugln("config item is not float")
-			return
-		}
-		_, err = strconv.ParseInt(v[2], 0, 64)
-		if err != nil {
-			logger.Debugln("config item is not float")
-			return
-		}
-
-		Open, err := strconv.ParseFloat(v[3], 64)
-		if err != nil {
-			logger.Debugln("config item is not float")
-			return
-		}
-
-		Close, err := strconv.ParseFloat(v[4], 64)
-		if err != nil {
-			logger.Debugln("config item is not float")
-			return
-		}
-
-		High, err := strconv.ParseFloat(v[5], 64)
-		if err != nil {
-			logger.Debugln("config item is not float")
-			return
-		}
-
-		Low, err := strconv.ParseFloat(v[6], 64)
-		if err != nil {
-			logger.Debugln("config item is not float")
-			return
-		}
-
-		Volumn, err := strconv.ParseFloat(v[7], 64)
-		if err != nil {
-			logger.Debugln("config item is not float")
-			return
-		}
-
-		const layout = "2006-01-02 15:04:05"
-		t := time.Unix(Time, 0)
-		record.TimeStr = t.Format(layout)
-		record.Time = Time
-		record.Open = Open
-		record.High = High
-		record.Low = Low
-		record.Close = Close
-		record.Volumn = Volumn
-
-		records = append(records, record)
+	var _recordBook []interface{}
+	if err := json.Unmarshal([]byte(content), &_recordBook); err != nil {
+		logger.Infoln(err)
+		return
 	}
-
+	records = convert2Records(_recordBook)
 	logger.Traceln("Okcoin parsePeroidArray end....")
 	ret = true
 	return

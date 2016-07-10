@@ -83,12 +83,12 @@ func RobotWorker() {
 
 	go func() {
 		for _ = range ticker.C {
-			peroid, _ := strconv.Atoi(Option["tick_interval"])
+			period, _ := strconv.Atoi(Option["tick_interval"])
 			strategyName := Option["strategy"]
 			ret := true
 			var records []Record
 			if strategyName != "OPENORDER" {
-				ret, records = marketAPI().GetKLine(peroid)
+				ret, records = marketAPI().GetKLine(period)
 			}
 
 			if ret != false {
@@ -200,10 +200,10 @@ func testBitVCAPI() {
 	*/
 }
 
-func testOkcoinBTCAPI() {
+func TestOkcoinBTCAPI() {
 	tradeAPI := okcoin.NewOkcoinTrade(SecretOption["ok_partner"], SecretOption["ok_secret_key"])
 	accout_info, _ := tradeAPI.GetAccount()
-	fmt.Println(accout_info)
+	fmt.Printf("account_info %+v", accout_info)
 
 	buyret := tradeAPI.BuyBTC("1000", "0.01")
 	fmt.Println(buyret)
@@ -226,6 +226,9 @@ func testOkcoinBTCAPI() {
 
 	ret = tradeAPI.Cancel_LTCorder("-1")
 	fmt.Println(ret)
+	marketApi := okcoin.NewOkcoin()
+	ret, records := marketApi.AnalyzeKLinePeroid("btc_cny", "15min")
+	fmt.Printf("ret %s,records %+v\n", ret, records)
 }
 
 func testOkcoinLTCAPI() {

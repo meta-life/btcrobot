@@ -45,7 +45,7 @@ type Order struct {
 }
 
 type MarketAPI interface {
-	GetKLine(peroid int) (ret bool, records []Record)
+	GetKLine(period int) (ret bool, records []Record)
 }
 
 type TradeAPI interface {
